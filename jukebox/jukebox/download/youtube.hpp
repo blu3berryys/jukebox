@@ -12,4 +12,4 @@ DownloadTask startYoutubeDownload(const std::string& id);
 
 }
 
-}
+}  // namespace jukebox

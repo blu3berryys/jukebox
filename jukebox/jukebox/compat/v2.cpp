@@ -6,10 +6,10 @@
 #include <string_view>
 #include <unordered_map>
 
-#include <matjson.hpp>
 #include <Geode/Result.hpp>
 #include <Geode/loader/Log.hpp>
 #include <Geode/loader/Mod.hpp>
+#include <matjson.hpp>
 
 #include <jukebox/compat/compat.hpp>
 #include <jukebox/nong/nong.hpp>
@@ -141,11 +141,10 @@ Result<std::unordered_map<int, CompatManifest>> parseManifest() {
     }
 
     GEODE_UNWRAP_INTO(matjson::Value json,
-                      matjson::parse(input)
-                          .mapErr([](matjson::ParseError err) {
-                              return fmt::format(
-                                  "Couldn't parse JSON from file: {}", err);
-                          }));
+                      matjson::parse(input).mapErr([](matjson::ParseError err) {
+                          return fmt::format(
+                              "Couldn't parse JSON from file: {}", err);
+                      }));
 
     if (!json.contains("version") || !json["version"].isNumber()) {
         return Err("Invalid JSON");
