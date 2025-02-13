@@ -8,7 +8,7 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 
 project(jukebox VERSION 3.1.0)
 
-file(GLOB SOURCES
+file(GLOB_RECURSE SOURCES
     jukebox/jukebox/ui/*.cpp
     jukebox/jukebox/ui/list/*.cpp
     jukebox/jukebox/managers/*.cpp
@@ -17,8 +17,8 @@ file(GLOB SOURCES
     jukebox/jukebox/download/*.cpp
     jukebox/jukebox/utils/*.cpp
     jukebox/jukebox/compat/*.cpp
-	jukebox/jukebox/nong/*.cpp
-	jukebox/jukebox/*.cpp
+    jukebox/jukebox/nong/*.cpp
+    jukebox/jukebox/*.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
