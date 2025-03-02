@@ -66,7 +66,7 @@ web::WebTask getMetadata(const std::string& id) {
              {"alwaysProxy", "true"}}))
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
-        .post("https://api.cobalt.tools/api/json");
+        .post("https://dl.hep.gg/api/json");
 }
 
 jukebox::download::DownloadTask onMetadata(web::WebResponse* result) {
