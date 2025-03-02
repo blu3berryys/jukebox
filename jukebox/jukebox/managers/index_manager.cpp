@@ -93,49 +93,47 @@ Result<> IndexManager::loadIndex(matjson::Value&& jsonObj) {
         std::make_unique<IndexMetadata>(std::move(indexMeta));
 
     this->cacheIndexName(index->m_id, index->m_name);
-
-    // TODO: re-enable youtube downloads at a later date
-    /*for (const auto& [key, ytNong] : jsonObj["nongs"]["youtube"].as_object())
-     * {*/
-    /*    Result<IndexSongMetadata> r =*/
-    /*        matjson::Serialize<IndexSongMetadata>::from_json(ytNong);*/
-    /*    if (r.isErr()) {*/
-    /*        event::SongError(*/
-    /*            false, fmt::format("Failed to parse index song: {}",
-     * r.error()))*/
-    /*            .post();*/
-    /*        continue;*/
-    /*    }*/
-    /*    std::unique_ptr<IndexSongMetadata> song =*/
-    /*        std::make_unique<IndexSongMetadata>(r.unwrap());*/
-    /*    song->uniqueID = key;*/
-    /*    song->parentID = index.get();*/
-    /**/
-    /*    for (int id : song->songIDs) {*/
-    /*        if (!m_nongsForId.contains(id)) {*/
-    /*            m_nongsForId[id] = {song.get()};*/
-    /*        } else {*/
-    /*            m_nongsForId[id].push_back(song.get());*/
-    /*        }*/
-    /**/
-    /*        std::optional<Nongs*> opt = NongManager::get().getNongs(id);*/
-    /*        if (!opt.has_value()) {*/
-    /*            continue;*/
-    /*        }*/
-    /**/
-    /*        Nongs* nongs = opt.value();*/
-    /**/
-    /*        if (geode::Result<> r = nongs->registerIndexSong(song.get());*/
-    /*            r.isErr()) {*/
-    /*            event::SongError(*/
-    /*                false,*/
-    /*                fmt::format("Failed to register index song: {}",
-     * r.error()))*/
-    /*                .post();*/
-    /*        }*/
-    /*    }*/
-    /*    index->m_songs.m_youtube.push_back(std::move(song));*/
-    /*}*/
+    for (const auto& [key, ytNong] : jsonObj["nongs"]["youtube"].as_object())
+         {
+        Result<IndexSongMetadata> r =
+            matjson::Serialize<IndexSongMetadata>::from_json(ytNong);
+        if (r.isErr()) {
+            event::SongError(
+                false, fmt::format("Failed to parse index song: {}",
+       r.error()))
+                .post();
+            continue;
+        }
+        std::unique_ptr<IndexSongMetadata> song =
+            std::make_unique<IndexSongMetadata>(r.unwrap());
+        song->uniqueID = key;
+        song->parentID = index.get();
+    
+        for (int id : song->songIDs) {
+            if (!m_nongsForId.contains(id)) {
+                m_nongsForId[id] = {song.get()};
+            } else {
+                m_nongsForId[id].push_back(song.get());
+            }
+    
+            std::optional<Nongs*> opt = NongManager::get().getNongs(id);
+            if (!opt.has_value()) {
+                continue;
+            }
+    
+            Nongs* nongs = opt.value();
+    
+            if (geode::Result<> r = nongs->registerIndexSong(song.get());
+                r.isErr()) {
+                event::SongError(
+                    false,
+                    fmt::format("Failed to register index song: {}",
+             r.error()))
+                    .post();
+            }
+        }
+        index->m_songs.m_youtube.push_back(std::move(song));
+    }
 
     for (const auto& [key, hostedNong] : jsonObj["nongs"]["hosted"]) {
         Result<IndexSongMetadata> r =
